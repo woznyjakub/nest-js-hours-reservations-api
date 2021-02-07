@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import Ajv, { JSONSchemaType } from 'ajv';
 import { hashPassword } from '../utils/hash-password';
-import { CreateUserResponse } from '../interfaces/user';
+import { CreateUserResponse, UserRole } from '../interfaces/user';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 
@@ -28,6 +28,7 @@ export class UserService {
       const user = new User();
       user.email = email;
       user.passwordHash = await hashPassword(password);
+      user.role = UserRole.User;
 
       await user.save();
     }

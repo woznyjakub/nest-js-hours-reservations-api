@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import Ajv, { JSONSchemaType } from 'ajv';
+import { hashPassword } from '../utils/hash-password';
 import { CreateUserResponse } from '../interfaces/user';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
@@ -10,11 +11,24 @@ export class UserService {
 
   async register(newUser: CreateUserDto): Promise<CreateUserResponse> {
     const [isValid, errors] = this.isUserValid(newUser);
+    const { email, password } = newUser;
 
     if (isValid) {
+      if (await this.isEmailExist(email)) {
+        return {
+          isSuccess: false,
+          errors: [
+            {
+              message: `This e-mail (${email}) already exist.`,
+            },
+          ],
+        };
+      }
+
       const user = new User();
-      user.login = newUser.email;
-      user.passwordHash = newUser.password;
+      user.email = email;
+      user.passwordHash = await hashPassword(password);
+
       await user.save();
     }
     return {
@@ -23,18 +37,27 @@ export class UserService {
     };
   }
 
+  async isEmailExist(email: string): Promise<boolean> {
+    const user = await User.find({
+      where: {
+        email,
+      },
+    });
+
+    return !!user.length;
+  }
+
   isUserValid(user: CreateUserDto): [boolean, any?] {
     const emailPattern = '^\\w+([.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$';
 
-    const passwordPattern =
-      '((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$';
+    const passwordPattern = '((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$';
 
     console.log('user:', user);
     const schema: JSONSchemaType<CreateUserDto> = {
       type: 'object',
       properties: {
         email: { type: 'string', minLength: 3, pattern: emailPattern },
-        password: { type: 'string', minLength: 6 },
+        password: { type: 'string', minLength: 6, pattern: passwordPattern },
       },
       required: ['email', 'password'],
       additionalProperties: false,

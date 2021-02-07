@@ -1,5 +1,11 @@
 import { Reservation } from '../../reservation/entities/reservation.entity';
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UserRole } from 'src/interfaces/user';
 
 @Entity()

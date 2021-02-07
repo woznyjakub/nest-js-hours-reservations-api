@@ -51,7 +51,8 @@ export class UserService {
   isUserValid(user: CreateUserDto): [boolean, any?] {
     const emailPattern = '^\\w+([.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$';
 
-    const passwordPattern = '((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$';
+    const passwordPattern =
+      '((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$';
 
     console.log('user:', user);
     const schema: JSONSchemaType<CreateUserDto> = {

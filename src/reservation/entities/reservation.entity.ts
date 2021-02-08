@@ -6,10 +6,13 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ReservationStatus } from '../../interfaces/reservation';
+import {
+  ReservationItem,
+  ReservationStatus,
+} from '../../interfaces/reservation';
 
 @Entity()
-export class Reservation extends BaseEntity {
+export class Reservation extends BaseEntity implements ReservationItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

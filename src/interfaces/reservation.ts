@@ -4,3 +4,12 @@ export enum ReservationStatus {
   Ordered = 300,
   Confirmed = 400,
 }
+
+export interface CreateReservationResponse {
+  isSuccess: boolean;
+  message: string;
+  data?: {
+    reservationId: string;
+    startDate: Date;
+  };
+}

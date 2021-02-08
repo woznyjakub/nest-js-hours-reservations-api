@@ -19,7 +19,6 @@ export class UserService {
     const user = new User();
     user.email = email;
     user.passwordHash = await hashPassword(password);
-    user.role = UserRole.User;
 
     await user.save();
 
@@ -30,12 +29,8 @@ export class UserService {
   }
 
   async isEmailExist(email: string): Promise<boolean> {
-    const user = await User.find({
-      where: {
-        email,
-      },
-    });
+    const users = await User.find({ email });
 
-    return !!user.length;
+    return !!users.length;
   }
 }

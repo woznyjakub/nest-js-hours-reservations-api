@@ -13,14 +13,16 @@ export class Reservation extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({
+    default: ReservationStatus.Available,
+  })
   status: ReservationStatus;
 
   @Column()
   startDate: Date;
 
-  // @ManyToOne(() => User, (user) => user.reservations)
-  // user: User;
+  @ManyToOne(() => User, (user) => user.reservations)
+  user: User;
 
   @Column({
     default: () => 'CURRENT_TIMESTAMP',

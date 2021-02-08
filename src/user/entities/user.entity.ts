@@ -3,6 +3,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -13,15 +14,20 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({
+    length: 255,
+  })
   email: string;
 
   @Column()
   passwordHash: string;
 
-  @Column()
+  @Column({
+    default: UserRole.User,
+  })
   role: UserRole;
 
-  // @OneToMany(() => Reservation, (reservation) => reservation.user)
-  // reservations: Reservation[];
+  @OneToMany(() => Reservation, (reservation) => reservation.user)
+  @JoinColumn()
+  reservations: Reservation[];
 }

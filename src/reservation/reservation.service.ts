@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CreateReservationResponse } from 'src/interfaces/reservation';
+import {
+  CreateReservationResponse,
+  GetStatsResponse,
+  ReservationItem,
+  ReservationStatus,
+} from '../interfaces/reservation';
 import { CreateReservationDto } from './dto/create-reservation.dto';
+import { GetReservationsStatsDto } from './dto/get-reservations-stats.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { Reservation } from './entities/reservation.entity';
 
@@ -56,19 +62,60 @@ export class ReservationService {
     return !!reservations.length;
   }
 
+  async getStats(
+    getStatsDto: GetReservationsStatsDto,
+  ): Promise<GetStatsResponse> {
+    const { intervalStartDate, intervalEndDate } = getStatsDto;
+    /**
+     * @todo: rewrite it to use query builder and use filtering by optional start and end interval dates
+     */
+    const reservations = await Reservation.find();
+
+    console.log(reservations);
+    const result: GetStatsResponse = {};
+
+    reservations.forEach((reservation: ReservationItem) => {
+      const { startDate, status } = reservation;
+
+      // get YYYY-MM-DD format
+      const dayDate = new Date(startDate).toISOString().split('T')[0];
+
+      if (!result[dayDate]) {
+        result[dayDate] = {
+          reservedHours: 0,
+          freeHours: 0,
+          blockedHours: 0,
+        };
+      }
+
+      switch (status) {
+        case ReservationStatus.Disabled:
+          result[dayDate].blockedHours++;
+          break;
+        case ReservationStatus.Available:
+          result[dayDate].freeHours++;
+          break;
+        case ReservationStatus.Ordered:
+          result[dayDate].reservedHours++;
+          break;
+        case ReservationStatus.Confirmed:
+          result[dayDate].reservedHours++;
+          break;
+      }
+    });
+
+    return result;
+  }
+
+  confirm(updateReservationDto: UpdateReservationDto) {
+    throw new Error('Method not implemented.');
+  }
+
+  disable(updateReservationDto: UpdateReservationDto) {
+    throw new Error('Method not implemented.');
+  }
+
   getAllReservations() {
     return Reservation.find();
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} reservation`;
-  }
-
-  update(id: number, updateReservationDto: UpdateReservationDto) {
-    return `This action updates a #${id} reservation`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} reservation`;
   }
 }

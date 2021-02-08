@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { hashPassword } from '../utils/hash-password';
-import { CreateUserResponse, UserRole } from '../interfaces/user';
+import { CreateUserResponse } from '../interfaces/user';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 
@@ -25,6 +25,10 @@ export class UserService {
     return {
       isSuccess: true,
       message: 'Successfully added new user to database.',
+      data: {
+        userId: user.id,
+        email: user.email,
+      },
     };
   }
 

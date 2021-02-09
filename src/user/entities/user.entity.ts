@@ -7,10 +7,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserRole } from '../../interfaces/user';
+import { UserItem, UserRole } from '../../interfaces/user';
 
 @Entity()
-export class User extends BaseEntity {
+export class User extends BaseEntity implements UserItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

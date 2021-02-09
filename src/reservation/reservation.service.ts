@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { getConnection } from 'typeorm';
 import {
   CreateReservationResponse,
   GetStatsResponse,
@@ -66,12 +67,21 @@ export class ReservationService {
     getStatsDto: GetReservationsStatsDto,
   ): Promise<GetStatsResponse> {
     const { intervalStartDate, intervalEndDate } = getStatsDto;
-    /**
-     * @todo: rewrite it to use query builder and use filtering by optional start and end interval dates
-     */
-    const reservations = await Reservation.find();
 
-    console.log(reservations);
+    const reservations = await getConnection()
+      .createQueryBuilder()
+      .select('reservation')
+      .from(Reservation, 'reservation')
+      .where(
+        'reservation.startDate BETWEEN :intervalStartDate and :intervalEndDate',
+        {
+          intervalStartDate,
+          intervalEndDate,
+        },
+      )
+      .orderBy('reservation.startDate', 'ASC')
+      .getMany();
+
     const result: GetStatsResponse = {};
 
     reservations.forEach((reservation: ReservationItem) => {

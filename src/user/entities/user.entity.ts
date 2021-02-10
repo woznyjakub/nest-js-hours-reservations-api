@@ -23,6 +23,13 @@ export class User extends BaseEntity implements UserItem {
   passwordHash: string;
 
   @Column({
+    type: 'varchar',
+    nullable: true,
+    default: null,
+  })
+  currentTokenId: string | null;
+
+  @Column({
     default: UserRole.User,
   })
   role: UserRole;

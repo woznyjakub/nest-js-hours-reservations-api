@@ -13,6 +13,7 @@ export interface UserItem {
   id: string;
   email: string;
   passwordHash: string;
+  currentTokenId: string | null;
   role: UserRole;
   reservations: Reservation[];
 }

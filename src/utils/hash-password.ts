@@ -1,7 +1,17 @@
-const bcrypt = require('bcrypt');
+import { createHmac } from 'crypto';
+// const bcrypt = require('bcrypt');
 
-export async function hashPassword(password: string): Promise<string> {
-  const saltOrRounds = 10;
+export function hashPassword(password: string): string {
+  // const saltOrRounds = 10;
+  // return bcrypt.hash(password, saltOrRounds);
+  const salt = process.env.PASSWORD_GENERATE_SALT;
 
-  return bcrypt.hash(password, saltOrRounds);
+  if (salt) {
+    const hmac = createHmac('sha512', salt);
+    hmac.update(password);
+
+    return hmac.digest('hex');
+  }
+
+  throw new Error('PASSWORD_GENERATE_SALT environment variable is missing.');
 }

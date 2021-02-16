@@ -18,7 +18,13 @@ export class UserService {
 
     const user = new User();
     user.email = email;
-    user.passwordHash = await hashPassword(password);
+    user.passwordHash = hashPassword(password);
+
+    console.log(
+      'pwd from user register method',
+      hashPassword(password),
+      password,
+    );
 
     await user.save();
 

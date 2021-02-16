@@ -44,8 +44,28 @@ export class AuthService {
     try {
       const user = await User.findOne({
         email,
-        // passwordHash: await hashPassword(password),
+
+        /**
+         * I must disable password checking for now, due to weird hashPassword() helper bahavior
+         * that did not work for both bcrypt and node's crypto packages
+         *
+         * @example for password `Qwerty123`:
+         * expected hash from crypto package: '27e8e2c44fde2e5cb97c7be031c115753924afb3834f12058370c834bac42ef8e0fa828ef85f194351b292a704d27fc906df740238f431b25cf8e1ecca4b1cc4',
+         * but got: 'a8d21ad7116c5d6c3e76acee618449acf68ceaed77d636dda2726786984359786a4712423869cc02bb2180a549e068138c7d02ebb5a025ab21873441e711055e',
+         */
+        // passwordHash: hashPassword(password),
       });
+
+      // const isMatch = await bcrypt.compare(password, user?.passwordHash);
+      // console.log({ isMatch }, password, user?.passwordHash);
+
+      console.log(
+        'pwd:',
+        hashPassword(password),
+        password,
+        password === 'Qwerty123',
+        hashPassword('Qwerty123'),
+      );
 
       if (!user) {
         return res.json(<AuthLoginResponse>{

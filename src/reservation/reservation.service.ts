@@ -147,7 +147,13 @@ export class ReservationService {
     };
   }
 
-  getAllReservations() {
+  async getReservations(options?: {
+    isAll?: boolean;
+  }): Promise<ReservationItem[]> {
+    if (options?.isAll) {
+      return Reservation.find();
+    }
+
     return Reservation.find();
   }
 }

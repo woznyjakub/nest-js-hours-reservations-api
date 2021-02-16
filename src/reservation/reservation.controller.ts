@@ -16,6 +16,7 @@ import {
   CreateReservationResponse,
   DisableReservationResponse,
   GetStatsResponse,
+  ReservationItem,
 } from '../interfaces/reservation';
 import { GetReservationsStatsDto } from './dto/get-reservations-stats.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -24,25 +25,25 @@ import { AuthGuard } from '@nestjs/passport';
 export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
 
+  @Get('/user')
+  getReservations(): Promise<ReservationItem[]> {
+    // pass user object
+    return this.reservationService.getReservations();
+  }
+
+  // admin
+  @Get('/all')
+  @UseGuards(AuthGuard('jwt'))
+  getAllReservations(): Promise<ReservationItem[]> {
+    return this.reservationService.getReservations({ isAll: true });
+  }
+
   // admin
   @Post('/create')
   create(
     @Body() createReservationDto: CreateReservationDto,
   ): Promise<CreateReservationResponse> {
     return this.reservationService.create(createReservationDto);
-  }
-
-  // user
-  @Get('/')
-  getReservations() {
-    // pass user object
-    // return this.reservationService.findAll();
-  }
-
-  // admin
-  @Get('/all')
-  getAllReservations() {
-    return this.reservationService.getAllReservations();
   }
 
   @Get('/stats')

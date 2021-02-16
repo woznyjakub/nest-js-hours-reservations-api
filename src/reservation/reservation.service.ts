@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { User } from '../user/entities/user.entity';
 import { getConnection } from 'typeorm';
 import {
   CreateReservationResponse,
@@ -147,11 +152,25 @@ export class ReservationService {
     };
   }
 
-  async getReservations(options?: {
-    isAll?: boolean;
+  async getReservations(options: {
+    getAll?: boolean;
+    user?: User;
   }): Promise<ReservationItem[]> {
-    if (options?.isAll) {
-      return Reservation.find();
+    const { getAll, user } = options;
+
+    if (!getAll) {
+      if (user) {
+        return Reservation.find({
+          relations: ['user'],
+          where: {
+            user: {
+              id: user.id,
+            },
+          },
+        });
+      }
+
+      throw new UnauthorizedException('User not provided.');
     }
 
     return Reservation.find();

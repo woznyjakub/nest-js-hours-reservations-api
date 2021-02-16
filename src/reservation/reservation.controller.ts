@@ -20,22 +20,24 @@ import {
 } from '../interfaces/reservation';
 import { GetReservationsStatsDto } from './dto/get-reservations-stats.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { UserObject } from 'src/decorators/user-object.decorator';
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('reservation')
 export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
 
   @Get('/user')
-  getReservations(): Promise<ReservationItem[]> {
-    // pass user object
-    return this.reservationService.getReservations();
+  @UseGuards(AuthGuard('jwt'))
+  getReservations(@UserObject() user: User): Promise<ReservationItem[]> {
+    return this.reservationService.getReservations({ user });
   }
 
   // admin
   @Get('/all')
   @UseGuards(AuthGuard('jwt'))
   getAllReservations(): Promise<ReservationItem[]> {
-    return this.reservationService.getReservations({ isAll: true });
+    return this.reservationService.getReservations({ getAll: true });
   }
 
   // admin

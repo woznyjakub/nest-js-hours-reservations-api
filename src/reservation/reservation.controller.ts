@@ -7,15 +7,18 @@ import {
   Param,
   Delete,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import {
   CreateReservationResponse,
+  DisableReservationResponse,
   GetStatsResponse,
 } from '../interfaces/reservation';
 import { GetReservationsStatsDto } from './dto/get-reservations-stats.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('reservation')
 export class ReservationController {
@@ -55,13 +58,13 @@ export class ReservationController {
   // }
 
   // admin
-  // @Patch('/disable/:id')
-  // disable(
-  //   @Param('id') id: string,
-  //   @Body() updateReservationDto: UpdateReservationDto,
-  // ) {
-  //   return this.reservationService.disable(+id, updateReservationDto);
-  // }
+  @Patch('/disable/:id')
+  @UseGuards(AuthGuard('jwt'))
+  disable(
+    @Param('id') reservationId: string,
+  ): Promise<DisableReservationResponse> {
+    return this.reservationService.disable(reservationId);
+  }
 
   // @Patch('/confirm/:id')
   // confirm(

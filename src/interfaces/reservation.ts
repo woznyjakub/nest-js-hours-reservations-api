@@ -24,6 +24,14 @@ export interface CreateReservationResponse {
   };
 }
 
+export interface DisableReservationResponse {
+  isSuccess: boolean;
+  message: string;
+  data?: {
+    reservationId: string;
+  };
+}
+
 export type GetStatsResponse = Record<
   string,
   {

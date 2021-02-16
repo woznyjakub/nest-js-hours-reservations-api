@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { getConnection } from 'typeorm';
 import {
   CreateReservationResponse,
+  DisableReservationResponse,
   GetStatsResponse,
   ReservationItem,
   ReservationStatus,
@@ -121,8 +122,29 @@ export class ReservationService {
     throw new Error('Method not implemented.');
   }
 
-  disable(updateReservationDto: UpdateReservationDto) {
-    throw new Error('Method not implemented.');
+  async disable(id: string): Promise<DisableReservationResponse> {
+    const reservation = await Reservation.update(
+      { id },
+      {
+        status: ReservationStatus.Disabled,
+      },
+    );
+
+    if (reservation) {
+      return {
+        isSuccess: true,
+        message:
+          'Successfully disabled reservation or the reservation already has it set.',
+        data: {
+          reservationId: id,
+        },
+      };
+    }
+
+    return {
+      isSuccess: false,
+      message: `Cannot find reservation with ${id} id.`,
+    };
   }
 
   getAllReservations() {

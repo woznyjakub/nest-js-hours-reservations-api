@@ -41,12 +41,28 @@ export class ReservationController {
     return this.reservationService.getReservations({ getAll: true });
   }
 
-  // admin
+  // user
   @Post('/create')
+  @UseGuards(AuthGuard('jwt'))
   create(
     @Body() createReservationDto: CreateReservationDto,
+    @UserObject() user: User,
   ): Promise<CreateReservationResponse> {
-    return this.reservationService.create(createReservationDto);
+    return this.reservationService.create(createReservationDto, {
+      putUser: true,
+      reservationUser: user,
+    });
+  }
+
+  // admin
+  @Post('/createFree')
+  @UseGuards(AuthGuard('jwt'))
+  createEmpty(
+    @Body() createReservationDto: CreateReservationDto,
+  ): Promise<CreateReservationResponse> {
+    return this.reservationService.create(createReservationDto, {
+      putUser: false,
+    });
   }
 
   @Get('/stats')

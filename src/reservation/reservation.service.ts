@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { User } from '../user/entities/user.entity';
 import { getConnection } from 'typeorm';
 import {
@@ -16,9 +20,16 @@ import { Reservation } from './entities/reservation.entity';
 export class ReservationService {
   async create(
     createReservationDto: CreateReservationDto,
+    options: { putUser: boolean; reservationUser?: User },
   ): Promise<CreateReservationResponse> {
+    const { putUser, reservationUser } = options;
     const { startDate: startDateString } = createReservationDto;
     const startDate = new Date(startDateString);
+
+    // check if reservationUser is empty intentionally (thats why the boolean is here)
+    if (putUser && !reservationUser) {
+      throw new BadRequestException('No user data when it was required.');
+    }
 
     if (this.isDateAFullHour(startDate)) {
       //
@@ -32,11 +43,15 @@ export class ReservationService {
       const reservation = new Reservation();
       reservation.startDate = startDate;
 
+      reservation.user = reservationUser as User;
+
       await reservation.save();
 
       return {
         isSuccess: true,
-        message: 'Reservation successfully created (available to reserve).',
+        message: `Reservation successfully created${
+          (!putUser && ' (available to reserve)') || ''
+        }.`,
         data: {
           startDate: reservation.startDate,
           reservationId: reservation.id,

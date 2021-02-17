@@ -11,12 +11,13 @@ import {
 } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
 import {
+  ConfirmReservationResponse,
   CreateReservationResponse,
   DisableReservationResponse,
   GetStatsResponse,
   ReservationItem,
+  ReservationStatus,
 } from '../interfaces/reservation';
 import { GetReservationsStatsDto } from './dto/get-reservations-stats.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -55,25 +56,27 @@ export class ReservationController {
     return this.reservationService.getStats(getReservationsStatsDto);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.reservationService.findOne(+id);
-  // }
-
   // admin
   @Patch('/disable/:id')
   @UseGuards(AuthGuard('jwt'))
   disable(
     @Param('id') reservationId: string,
   ): Promise<DisableReservationResponse> {
-    return this.reservationService.disable(reservationId);
+    return this.reservationService.updateStatus(
+      reservationId,
+      ReservationStatus.Disabled,
+    );
   }
 
-  // @Patch('/confirm/:id')
-  // confirm(
-  //   @Param('id') id: string,
-  //   @Body() updateReservationDto: UpdateReservationDto,
-  // ) {
-  //   return this.reservationService.confirm(+id, updateReservationDto);
-  // }
+  // admin
+  @Patch('/confirm/:id')
+  @UseGuards(AuthGuard('jwt'))
+  confirm(
+    @Param('id') reservationId: string,
+  ): Promise<ConfirmReservationResponse> {
+    return this.reservationService.updateStatus(
+      reservationId,
+      ReservationStatus.Confirmed,
+    );
+  }
 }

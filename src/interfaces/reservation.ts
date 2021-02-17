@@ -24,13 +24,17 @@ export interface CreateReservationResponse {
   };
 }
 
-export interface DisableReservationResponse {
+export interface UpdateReservationResponse {
   isSuccess: boolean;
   message: string;
   data?: {
     reservationId: string;
   };
 }
+
+export type DisableReservationResponse = UpdateReservationResponse;
+
+export type ConfirmReservationResponse = UpdateReservationResponse;
 
 export type GetStatsResponse = Record<
   string,

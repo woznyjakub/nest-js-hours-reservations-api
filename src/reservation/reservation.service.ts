@@ -1,20 +1,15 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '../user/entities/user.entity';
 import { getConnection } from 'typeorm';
 import {
   CreateReservationResponse,
-  DisableReservationResponse,
   GetStatsResponse,
   ReservationItem,
   ReservationStatus,
+  UpdateReservationResponse,
 } from '../interfaces/reservation';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { GetReservationsStatsDto } from './dto/get-reservations-stats.dto';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { Reservation } from './entities/reservation.entity';
 
 @Injectable()
@@ -123,23 +118,17 @@ export class ReservationService {
     return result;
   }
 
-  confirm(updateReservationDto: UpdateReservationDto) {
-    throw new Error('Method not implemented.');
-  }
-
-  async disable(id: string): Promise<DisableReservationResponse> {
-    const reservation = await Reservation.update(
-      { id },
-      {
-        status: ReservationStatus.Disabled,
-      },
-    );
+  async updateStatus(
+    id: string,
+    status: ReservationStatus,
+  ): Promise<UpdateReservationResponse> {
+    const reservation = await Reservation.update({ id }, { status });
 
     if (reservation) {
       return {
         isSuccess: true,
         message:
-          'Successfully disabled reservation or the reservation already has it set.',
+          'Successfully updated reservation or the reservation has this value already set.',
         data: {
           reservationId: id,
         },
